@@ -9,9 +9,12 @@ return {
         "williamboman/mason-lspconfig.nvim",
     },
     config = function()
+        local function setup(server, opts)
+            vim.lsp.config(server, opts)
+        end
         require("mason").setup()
         -- import lspconfig plugin
-        local lspconfig = require("lspconfig")
+        -- local lspconfig = require("lspconfig")
 
         -- import mason_lspconfig plugin
         local mason_lspconfig = require("mason-lspconfig")
@@ -94,14 +97,14 @@ return {
         mason_lspconfig.setup_handlers({
             -- default handler for installed servers
             function(server_name)
-                lspconfig[server_name].setup({
+                setup(server_name, {
                     capabilities = capabilities,
                 })
             end,
 
             ["svelte"] = function()
                 -- configure svelte server
-                lspconfig["svelte"].setup({
+                setup("svelte", {
                     capabilities = capabilities,
                     on_attach = function(client)
                         vim.api.nvim_create_autocmd("BufWritePost", {
@@ -116,21 +119,21 @@ return {
             end,
             ["graphql"] = function()
                 -- configure graphql language server
-                lspconfig["graphql"].setup({
+                setup("graphql", {
                     capabilities = capabilities,
                     filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
                 })
             end,
             ["emmet_ls"] = function()
                 -- configure emmet language server
-                lspconfig["emmet_ls"].setup({
+                setup("emmet_ls", {
                     capabilities = capabilities,
                     filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
                 })
             end,
             ["lua_ls"] = function()
                 -- configure lua server (with special settings)
-                lspconfig["lua_ls"].setup({
+                setup("lua_ls", {
                     capabilities = capabilities,
                     settings = {
                         Lua = {
@@ -157,7 +160,7 @@ return {
                 -- })
             -- end,
             ["ts_ls"] = function()
-                lspconfig.ts_ls.setup({
+                setup("ts_ls", {
                     capabilities = capabilities,
                     cmd = { 'typescript-language-server', '--stdio' },
                     filetypes = {
@@ -168,11 +171,11 @@ return {
                         'typescriptreact',
                         'typescript.tsx',
                     },
-                    root_dir = lspconfig.util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git'),
+                    -- root_dir = lspconfig.util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git'),
                 })
             end,
             ["pyright"] = function()
-                lspconfig.pyright.setup {
+                setup("pyright", {
                     on_attach = on_attach,
                     settings = {
                         pyright = {
@@ -186,7 +189,7 @@ return {
                                 typeCheckingMode = 'off'}
                         }
                     }
-                }
+                })
             end,
         })
     end,
