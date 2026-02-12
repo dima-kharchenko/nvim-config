@@ -11,6 +11,7 @@ return {
     config = function()
         local function setup(server, opts)
             vim.lsp.config(server, opts)
+            vim.lsp.enable(server)
         end
         require("mason").setup()
         -- import lspconfig plugin
@@ -23,10 +24,17 @@ return {
         -- import cmp-nvim-lsp plugin
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
         local cmp = require("cmp")
+        local luasnip = require("luasnip")
 
         cmp.setup({
+            snippet = {
+                expand = function(args)
+                    luasnip.lsp_expand(args.body)
+                end,
+            },
             sources = {
                 { name = "nvim_lsp" },
+                { name = "luasnip" },
                 { name = "buffer" },
                 { name = "path" },
             },
@@ -84,6 +92,8 @@ return {
         })
         -- used to enable autocompletion (assign to every lsp server config)
         local capabilities = cmp_nvim_lsp.default_capabilities()
+        -- local capabilities = vim.lsp.protocol.make_client_capabilities()
+        -- capabilities.textDocument.completion.completionItem.snippetSupport = true
 
         -- Change the Diagnostic symbols in the sign column (gutter)
         -- (not in youtube nvim video)
@@ -127,8 +137,17 @@ return {
             ["emmet_ls"] = function()
                 -- configure emmet language server
                 setup("emmet_ls", {
+                    -- on_attach = on_attach,
                     capabilities = capabilities,
-                    filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
+                    filetypes = { "css", "eruby", "html", "javascript", "javascriptreact", "less", "sass", "scss", "svelte", "pug", "typescriptreact", "vue" },
+                    init_options = {
+                        html = {
+                            options = {
+                                -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
+                                ["bem.enabled"] = true,
+                            },
+                        },
+                    }
                 })
             end,
             ["lua_ls"] = function()
@@ -172,6 +191,20 @@ return {
                         'typescript.tsx',
                     },
                     -- root_dir = lspconfig.util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git'),
+                })
+            end,
+            ["tailwindcss"] = function()
+                setup("tailwindcss", {
+                    capabilities = capabilities,
+                    filetypes = {
+                        "html",
+                        "css",
+                        "scss",
+                        "javascript",
+                        "javascriptreact",
+                        "typescript",
+                        "typescriptreact",
+                    },
                 })
             end,
             ["pyright"] = function()
