@@ -28,4 +28,4 @@ vim.g.mapleader = " "
 
 vim.opt.clipboard = "unnamedplus"
 
-vim.opt.colorcolumn = "100"
+vim.opt.colorcolumn = "80"
